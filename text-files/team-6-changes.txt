@@ -1,0 +1,4 @@
+1. json creation file - joseph
+2. better account flow (signup.py, faculty/student differntiation) - antonio
+3. viewStats when null reroutes to 404 (app.py) - antonio
+4. File + directory organization fixed - Antonio
