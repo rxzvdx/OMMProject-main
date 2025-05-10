@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMM Question Bank</title>
+    <title>Signup</title>
     <!--<link rel="stylesheet" type="text/css" href="style.css"> -->
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Add Bootstrap CSS via CDN -->
@@ -66,9 +66,11 @@
                 </div>
                 <div class="modal-footer">
                 <button name="button" value="cancelButton" type="button" class="btn btn-warning" data-dismiss="modal">CANCEL</button>
-                <button name="button" value="studentButton" type="submit" class="btn btn-primary">Save as Student</button>
-                <button name="button" value="facultyButton" type="submit" class="btn btn-primary">Save as Faculty</button>
-                </div>
+		<!-- RENAMED "BUTTON" TO "ROLE" --!>
+		<button name="role" value="student" type="submit" class="btn btn-primary">Save as Student</button>
+                <button name="role" value="faculty" type="submit" class="btn btn-primary">Save as Faculty</button>
+                <button name="role" value="admin" type="submit" class="btn btn-danger"> Save as Admin</button>
+		</div>
             </div>
             </div>
         </div>

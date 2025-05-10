@@ -3,7 +3,7 @@
 <html lang="en">
 
   <head>
-      <title>Page Title</title>
+      <title>Question Successfully Added</title>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -17,7 +17,7 @@
 <body>
   <div class="container-fluid">
     <div class="row">
-        <div class="col-md-3">
+        <div class="col-md-1">
             <div class="nav">
                 {% include 'navbar.html' %}
             </div>
@@ -25,14 +25,14 @@
         <div class="col-md-9">
             <div class="container">
                 {% block content %}
-                    <h1> Successfully added question </h1>
+                    <h1>Question Successfully Added!</h1>
                     {% if question.getImage() %}
-                    <img src="data:image/jpeg;base64,{{ question.getImage() }}" alt="did not load" style="width: 500px; height: 500px;">
+                    <img src="data:image/jpeg;base64,{{ question.getImage() }}" alt="did not load" style="max-width: 1024px; max-height: 576px; width: auto; height: auto; display: block; margin-top: 10px;">
                     {% endif %}
-                    <h1>Question:</h1>
+                    <h3>Question:</h3>
                     <p>{{ question.getQuestionText() }} </p>
                     <p><span class="text-primary"> Question ID: </span>{{ question.getID() }}</p>
-                    <h1>Answers</h1>
+                    <h3>Answers:</h3>
                     <ul>
                         {% for answer in question.getAnswers() %}
                             <input {% if answer.getIsCorrect() == '1' %} checked {% else %} disabled {% endif %} type="checkbox"> <span>{{ answer.getAnswerText() }} </span>
@@ -40,10 +40,10 @@
                         {% endfor %}
                     </ul>
 
-                    <h1>Explanation:</h1>
+                    <h3>Explanation:</h3>
                     <p>{{ question.getExampleText() }}</p>
                     {% if question.getExplanationImage() %}
-                    <img src="data:image/jpeg;base64,{{ question.getExplanationImage() }}" alt="did not load" style="width: 500px; height: 500px;">
+                    <img src="data:image/jpeg;base64,{{ question.getExplanationImage() }}" alt="did not load" style="max-width: 1024px; max-height: 576px; width: auto; height: auto; display: block; margin-top: 10px;">
                     {% endif %}
 
                     <a href="/addQuestion"><button class="btn btn-warning btn-lg "type="button"><div class="text-primary">Create Another Question</div></button></a>

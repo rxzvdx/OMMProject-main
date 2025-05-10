@@ -1,6 +1,17 @@
-from DatabaseFunctions import get_question
-from database_connection import makeConnection
-from flask import redirect, render_template, request, session
+# SWE Team 6:
+# Joseph, Tyler, Antonio, Ross, Kashan, Gavin
+# File: searchQuestion.py
+# Purpose:  
+#   1.) Handles searching for questions based on their ID or tag.
+#   2.) Allows users to search for a question by its ID and reedirects to an edit page, 
+#       or search for questions by a specific tag, displaying results on the search page.
+#   3.) Queries the database for questions with the selected tag and returns the results as a list of 
+#       dictionaries containing the question ID, text, and tag
+# Last edited: 02/06/2025 
+
+from database import get_question
+from connection import makeConnection
+from flask import flash, redirect, render_template, request, session
 
 
 def searchQuestions(UPLOAD_FOLDER):
@@ -10,9 +21,13 @@ def searchQuestions(UPLOAD_FOLDER):
         if request.form['button'] == "idSearch":
             if request.form['searchQuestionID']:
                 question_id = request.form.get('searchQuestionID')
-                # question = get_question.getquestionfromdatabase(int(question_id), UPLOAD_FOLDER)
-                return redirect((f'/editQuestion/{question_id}'))
-            
+                try:
+                    question = get_question.getquestionfromdatabase(int(question_id), UPLOAD_FOLDER)
+                    return redirect((f'/editQuestion/{question_id}'))
+                except Exception as e:
+                    flash(f"An error occurred while searching for that question.", "danger")
+                    return redirect((f'/searchQuestion'))
+
         if request.form['button'] == "tagSearch":
           tag = request.form.get('tagDropdown')
     

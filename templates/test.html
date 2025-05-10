@@ -2,44 +2,34 @@
 
 {% block content %}
 <script src="{{ url_for('static', filename='script.js') }}"></script>
-<script>
-    
-    // Ensure only the first question set is initially visible
-    document.addEventListener('DOMContentLoaded', function() {
-        startTimer();
-        showQuestionSet(currentIndex);
 
-    // Check if question_states is present
-    var questionStates = question_states || null;
-    if (questionStates) {
-        displayQuestionStates(questionStates);
-    }
-    });
-
-    var exitExamButton = event.target.closest('.btn-exit-exam');
-    if (exitExamButton) {
-        $('#exitExamModal').modal('show');
-    }
-
-</script>
-
-<div style="padding-left: 90%;">
-    Time: 
-    <p id="timer">00:00</p>
+<div style="padding-left: 50%;">
+    Time Elapsed: 
+    <p id="timer" style="padding-left: 30px;">00:00</p>
 </div>
 
 {% for question in testList.getTestSet() %}
 <div class="question-set col-md-6" style="padding-left: 20%;" data-question-id="{{ question.getID() }}">
     <div class="questionContainer">
         {{ question.getQuestionText() }}
-        {{ question.getID() }}
+        <!-- {{ question.getID() }} -->
+        
         <script>console.log("start: " + '{{ question.getImage() }}')</script>
-        <img src="data:image/jpeg;base64,{{ question.getImage() }}" alt="did not load" style="width: 500px; height: 500px;">
+        {% if question.getImage() %}
+          <img class="questionImage" id="questionImage{{ question.getID() }}" src="data:image/jpeg;base64,{{ question.getImage() }}" alt="Question Image" data-question-id="{{ question.getID() }}" style="max-width: 512px; max-height: 288px; width: auto; height: auto; display: block; margin-top: 10px;">
+        {% endif %}
     </div>
-    <!-- End of Question Container -->
 
-    <div class="answerContainer">
-        {% for answer in question.getAnswers() %}
+<!-- The Image Modal -->
+<div id="ImgModal{{ question.getID() }}" class="modalImg">
+  <span class="close">&times;</span>
+  <img class="modalImg-content" id="img01{{ question.getID() }}">
+</div>
+
+<!-- End of Question Container -->
+
+<div class="answerContainer">
+    {% for answer in question.getAnswers() %}
         <!-- Div for Radio Buttons next to answers -->
         <div class="space">
             <div class="form-check">
@@ -52,42 +42,61 @@
             </div>
             <br>
         </div>
-        {% endfor %}
+    {% endfor %}
+</div>
+<!-- End of Answer Container -->
+
+<!-- TODO: NEEDS CSS STYLING TO MAKE LOOK PRETTIER -->
+<div class="feedback-container"></div>
+<div id="submitBtn" data-is-timed="{{ isTimed }}"></div>
+
+<div class="button-container fixed-bottom d-flex justify-content-end mb-3" style="padding-right: 20px; z-index: 1;" id="buttonContainer">
+    <div class="btn-group" role="group">
+        
+        {% if loop.last %} 
+            <button type="button" class="btn btn-success btn-lg mr-3 rounded" onclick="completeExam()">Complete Exam</button>
+        {% endif %}
+        
+        {% if loop.first %} 
+            <button type="button" class="btn btn-primary btn-lg mr-3 rounded" style="cursor: not-allowed; opacity: 0.3;">Previous</button>
+        {% else %}    
+            <button type="button" class="btn btn-primary btn-lg mr-3 rounded" onclick="moveToPreviousQuestion()">Previous</button>
+        {% endif %}
+        
+        {% if loop.last %} 
+            <button type="button" class="btn btn-primary btn-lg mr-3 rounded" style="cursor: not-allowed; opacity: 0.3;">Next</button>
+        {% else %}    
+            <button type="button" class="btn btn-primary btn-lg mr-3 rounded" onclick="storeAnswerData()">Next</button>
+        {% endif %}
+            
+        <!--- <button type="button" class="btn btn-info btn-lg mr-5 rounded" onclick="highlightSelectedText()">Highlight</button>
+        <button type="button" class="btn btn-warning btn-lg mr-5 rounded" onclick="strikethroughSelectedAnswer()">Strikethrough</button>--->
+       
+        {% if isTimed == 'False' %}
+            <button type="submit" class="btn btn-primary btn-lg mr-3 rounded" id="submitBtn" onclick="showFeedback()">Check work</button>
+        {% endif %}
+
+        <button type="button" class="btn btn-danger btn-lg mr-3 rounded btn-exit-exam" data-toggle="modal" data-target="#exitExamModal">Exit Exam</button>
     </div>
-    <!-- End of Answer Container -->
-
-    <!-- TODO: NEEDS CSS STYLING TO MAKE LOOK PRETTIER -->
-    <div class="feedback-container"></div>
-    <div id="submitBtn" data-is-timed="{{ isTimed }}"></div>
-
-    <div class="button-container fixed-bottom d-flex justify-content-end mb-3" style="padding-right: 20px;" id="buttonContainer">
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-primary btn-lg mr-5 rounded" onclick="moveToPreviousQuestion()">Previous</button>
-            <button type="button" class="btn btn-primary btn-lg mr-5 rounded" onclick="storeAnswerData()">Next</button>
-            <button type="button" class="btn btn-info btn-lg mr-5 rounded" onclick="highlightSelectedText()">Highlight</button>
-            <button type="button" class="btn btn-warning btn-lg mr-5 rounded" onclick="strikethroughSelectedAnswer()">Strikethrough</button>
-            {% if isTimed == 'False' and not loop.last %}
-            <button type="submit" class="btn btn-primary btn-lg rounded" id="submitBtn" onclick="showFeedback()">Check work</button>
-            {% endif %}
-
-            {% if loop.last %} 
-                <button type="button" class="btn btn-success btn-lg rounded" onclick="completeExam()">Complete Exam</button>
-            {% endif %}
-            <button type="button" class="btn btn-danger btn-lg rounded btn-exit-exam" data-toggle="modal" data-target="#exitExamModal">Exit Exam</button>
-
-        </div>
-    </div>
+</div>
 
     
-    <div class="example-container">
-        <div class="example-text">
-            <p>{{ question.getExampleText() }}</p>
-            <img src = "data:image/jpeg;base64,{{ question.getExplanationImage() }}" alt = "did not load" />
+<div class="example-container">
+    <div class="example-text">
+        <p>{{ question.getExampleText() }}</p>
+            {% if question.getExplanationImage() %}
+                <img class="questionExplanationImage" id="questionExplanationImage{{ question.getID() }}" src="data:image/jpeg;base64,{{ question.getExplanationImage() }}" alt="Explanation Image" data-question-id="{{ question.getID() }}" style="max-width: 512px; max-height: 288px; width: auto; height: auto; display: block; margin-top: 10px; margin-bottom: 20px;">
+            {% endif %}
         </div>
+    </div>
+    <div id="ExpModal{{ question.getID() }}" class="modalImg">
+        <span class="close">&times;</span>
+        <img class="modalImg-content" id="expImg01{{ question.getID() }}">
     </div>
 </div>
 {% endfor %}
 <!-- End of Button Container -->
+
 <!-- Bootstrap Modal -->
 <div class="modal" tabindex="-1" role="dialog" id="exitExamModal" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -109,46 +118,221 @@
     </div>
 </div>
 
-<div class="modal" tabindex="-1" role="dialog" id="exitExamModal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Exit Exam</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="false">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Are you sure you want to exit the exam?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-danger" onclick="exitExam()">Exit Exam</button>
-            </div>
-        </div>
-    </div>
-</div>
+<script>
+  
+document.addEventListener('DOMContentLoaded', function () {
+    // Ensure only the first question set is visible
+    console.log("DOM fully loaded");
+    startTimer();
+    showQuestionSet(currentIndex);
+    
+    // Select all images dynamically without relying on a class
+    const images = document.querySelectorAll('[id^="questionImage"]');
+    const imagesExp = document.querySelectorAll('[id^="questionExplanationImage"]');
+    console.log("Images found:", images); // This should list all matching images
+    console.log("Images found:", imagesExp);
+    
+    images.forEach(function(img) {
+      console.log(img)
+        img.onclick = function() {
+            console.log("Clicked");
+            const questionID = img.getAttribute("data-question-id"); // Retrieves the data-question-id
+            const imageModal = document.getElementById(`ImgModal${questionID}`);
+            const modalImg = document.getElementById(`img01${questionID}`);
+            console.log("Opening modal for question ID:", questionID);
+            
+            imageModal.style.display = "block";
+            modalImg.src = this.src;
+        };
+    });
+    
+    imagesExp.forEach(function(img) {
+        img.onclick = function() {
+            const questionID = img.getAttribute("data-question-id"); 
+            const imageModal = document.getElementById(`ExpModal${questionID}`);
+            const modalImg = document.getElementById(`expImg01${questionID}`);
+
+            imageModal.style.display = "block";
+            modalImg.src = this.src;
+        };
+    });
+
+    // Handle closing for all modals
+    const closeButtons = document.querySelectorAll(".close");
+    closeButtons.forEach(function(closeButton) {
+        closeButton.onclick = function() {
+            const modal = this.closest(".modalImg");
+            modal.style.display = "none";
+        };
+    });
+    
+    document.addEventListener("mouseup", function () {
+      console.log("mouseup action");
+      let selection = window.getSelection();
+      if (!selection.rangeCount) return;
+
+      let range = selection.getRangeAt(0);
+      let selectedText = range.toString().trim();
+
+      if (selectedText.length === 0) return; // Ignore empty selections
+      if (!isInsideQuestionContainer(range)) return; // Prevent highlighting headers or radio buttons
+
+      let span = document.createElement("span");
+      span.className = "highlight";
+
+      try {
+        let fragment = range.extractContents();
+        span.appendChild(fragment);
+        range.insertNode(span);
+        selection.removeAllRanges();
+        console.log("highlighted text");
+      } catch (error) {
+        console.warn("Could not highlight selection:", error);
+      }
+  });
+  
+  document.addEventListener("click", function (event) {
+    if (event.target.classList.contains("highlight")) {
+        let span = event.target;
+        let parent = span.parentNode;
+        parent.replaceChild(document.createTextNode(span.textContent), span);
+        console.log("removed highlight");
+    } 
+  });
+  
+  document.addEventListener("contextmenu", function (event) {
+    let label = event.target.closest(".form-check");
+    if (label) {
+        event.preventDefault(); // Prevent default right-click menu
+        
+        let textTarget = label.querySelector(".form-check-label");
+        let radioTarget = label.querySelector(".form-check-input");
+
+          // Toggle the strikethrough class
+          if (textTarget.classList.contains("strikethrough")) {
+            console.log("removed strikethrough");
+            textTarget.classList.remove("strikethrough");
+            radioTarget.disabled = false;
+          } else {
+            textTarget.classList.add("strikethrough");
+            console.log("added strikethrough");
+            radioTarget.disabled = true;
+          }
+      }
+  });
+});
+
+var exitExamButton = event.target.closest('.btn-exit-exam');
+if (exitExamButton) {
+    $('#exitExamModal').modal('show');
+}
+
+
+function isInsideQuestionContainer(range) {
+    return [...document.querySelectorAll(".questionContainer")].some(container => 
+        container.contains(range.startContainer) && container.contains(range.endContainer)
+    );
+}
+</script>
 
 <style>
+
     .space {
         padding: 10px;
     }
+    
     .example-container {
         display: none;
     }
 
-    .highlighted-text {
-    background-color: yellow;
+    .highlight {
+      background-color: yellow;
     }
 
-    /* Styles for Strikethrough Answer */
     .strikethrough {
-        text-decoration: line-through;
-        color: #FF0000; /* Change the color as per your preference */
+      text-decoration: line-through;
+      color: gray;
+      pointer-events: none;
     }
 
     #timer {
         display: block;
+    }
+    
+    .questionImage {
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .questionImage:hover {
+        opacity: 0.7;
+    }
+    
+    .questionExplanationImage {
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    
+    .questionExplanationImage:hover {
+        opacity: 0.7;
+    }
+    
+    .modalImg {
+      display: none;
+      position: fixed;
+      z-index: 2; /* Sit on top of everything */
+      padding-top: 100px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.85); /* Black w/ opacity */
+    }
+      
+    .modalImg-content {
+      margin: auto;
+      display: block;
+      width: 80%;
+      max-width: 700px;
+      position: relative; 
+      top: -8%;
+
+      -webkit-animation-name: zoom;
+      -webkit-animation-duration: 0.3s;
+      animation-name: zoom;
+      animation-duration: 0.3s;
+    }
+    
+    @-webkit-keyframes zoom {
+      from {-webkit-transform:scale(0)} 
+      to {-webkit-transform:scale(1)}
+    }
+
+    @keyframes zoom {
+      from {transform:scale(0)} 
+      to {transform:scale(1)}
+    }
+    
+    /* The Close Button */
+    .close {
+      position: absolute;
+      top: 15px;
+      right: 35px;
+      color: #f1f1f1;
+      font-size: 40px;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    
+    .close:hover, .close:focus {
+      color: #bbb;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    
+    body {
+        background-color: #e0e0e0;
     }
 
 </style>

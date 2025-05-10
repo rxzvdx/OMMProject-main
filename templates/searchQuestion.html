@@ -3,24 +3,24 @@
 {% block content %}
 <form method="POST" action = "{{ url_for('searchQuestion') }} ">
 <div class="container">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="searchQuestionID">Search for a question based on its ID:</label>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="form-group">
-                <input type="text" class="form-control form-control-sm" name="searchQuestionID" id="searchQuestionID">
-                <button name="button" value="idSearch" class="btn btn-primary">Search based off of ID </button>
-            </div>
-        </div>
+    <div class="row d-flex align-items-center justify-content-start">
+        <label for="searchQuestionID" style="margin-right: 12px">Search for a question based on its ID:</label>
+        <input type="text" class="form-control form-control-sm" style="width: 150px; margin-right: 12px;" name="searchQuestionID" id="searchQuestionID">
+        <button name="button" value="idSearch" style="width: 150px; height: 50px; margin-top: 0px; text-align: center; display: flex; align-items: center;" class="btn btn-primary">Search based off of ID</button>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
     </div>
 
     <div class="row">
         <div class="col-md-3">
             <div class="form-group">
-                <label for="tagDropdown">Tags</label>
+                <label for="tagDropdown">Search Tag:</label>
                 <select class="form-control" id="tagDropdown" name="tagDropdown">
                     <option value="{{ tag }}">{{ tag.capitalize() }}</option>
                     <option value="anatomy">Anatomy</option>
@@ -56,7 +56,7 @@
                 </select>
             </div>
         </div>
-        <button name="button" class="btn btn-primary" value="tagSearch">Search based off of tag </button>
+        <button name="button" class="btn btn-primary" style="margin-bottom: 10px" value="tagSearch">Search based off of tag </button>
     </div>
    
     <div class="row" id="searchResults">
@@ -90,5 +90,10 @@
     .smaller-font {
         font-size: 15px; /* You can adjust the size as needed */
     }
+    
+    body {
+        background-color: #e0e0e0;
+    }
+    
 </style>
 {% endblock %}

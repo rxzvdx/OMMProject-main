@@ -1,5 +1,15 @@
+# SWE Team 6:
+# Joseph, Tyler, Antonio, Ross, Kashan, Gavin
+# File: createTest.py
+# Purpose: 
+#   1.) The function creates a test by collecting user input, such as
+#       the number of questions, selected categories, and test options
+#   2.) It connects to the database, retrieves the user's ID, generates a test entry
+#       and records the attempt. The user is then redirected to the test page
+# Last edited: 02/06/2025. 
+
 from flask import redirect, render_template, request, session, url_for
-from database_connection import makeConnection
+from connection import makeConnection
 
 
 def create():
@@ -21,17 +31,24 @@ def create():
         # TODO TELL FRONTEND TO ADD IN MISSING TAGS
         
         select_tags = request.form.getlist('category') # contains list of categories chosen
-        number_of_questions = int(request.form.get('numberInput')) # holds the number of questions student entered
+        
+        try:
+            number_of_questions = int(request.form.get('numberInput')) # holds the number of questions student entered
+        except (TypeError, ValueError): 
+            number_of_questions = 1  # Default to 1 if conversion fails
+            
         users_id = session.get('users_id') # Grab current person logged in user_id
+        
+        testName = request.form.get('testNameInput').strip() # Get name of test
+        if len(testName) == 0: # If test is unnamed
+          testName = "Unnamed Test"  
 
-        name_of_exam = "test"    #TODO Add in form to allow student to name exam?    
-
-        from DatabaseFunctions.make_test import makeTest
+        from database.make_test import makeTest
         from datetime import date
-        from DatabaseFunctions.make_attempt import makeAttempt
+        from database.make_attempt import makeAttempt
         date = str(date.today())
 
-        test_id = makeTest(cnx, select_tags, number_of_questions, users_id, name_of_exam, isTutor, isTimed, date)
+        test_id = makeTest(cnx, select_tags, number_of_questions, users_id, testName, isTutor, isTimed, date)
         attempt_num, attempt_id = makeAttempt(cnx, test_id)
         session['test_id'] = test_id
         session['attempt_num'] = attempt_num

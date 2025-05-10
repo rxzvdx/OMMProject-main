@@ -1,5 +1,17 @@
+# SWE Team 6:
+# Joseph, Tyler, Antonio, Ross, Kashan, Gavin
+# File: submit_data.py
+# Purpose:  
+#   1.) Handles the submission of exam data, including the state of each question.
+#   2.) Extracts the questionStates from the incoming JSON file and saves it to the session.
+#   3.) For the last question in the list, it retrieves the score and time, storing them in the session if available.
+#   4.) Inserts each answer into the database by calling insertAnswer for each question's state.
+#   5.) Updates the exam attempt with the final score, completion status, and time taken by calling updateAttempt
+#       then returns a success message in JSON format.
+# Last edited: 02/06/2025 
+
 from flask import request, session, jsonify
-from database_connection import makeConnection
+from connection import makeConnection
 
 
 def submit():
@@ -20,7 +32,7 @@ def submit():
     if 'score' in last_question:
         session['score'] = last_question['score']
 
-    from DatabaseFunctions.insert_answer import insertAnswer
+    from database.insert_answer import insertAnswer
     for state in question_states:
         # print(state)
         selected_answer = state.get('selectedAnswer') #Good
@@ -39,7 +51,7 @@ def submit():
     is_complete = 1
     time_taken = session.get('exam_time')   
 
-    from DatabaseFunctions.update_attempt import updateAttempt
+    from database.update_attempt import updateAttempt
     cnx = makeConnection()   
     updateAttempt(cnx, attempt_id, score, is_complete, time_taken)
 

@@ -1,5 +1,11 @@
+# SWE Team 6:
+# Joseph, Tyler, Antonio, Ross, Kashan, Gavin
+# File: testSet.py
+# Purpose: Loads an arraylist of questions for the current test.
+# Last edited: 02/06/2025
+
 #This Test Set is an arrayList of all the questions queried from the database
-import Question
+from Objects import Question
 
 class testSet():
     def __init__(self):

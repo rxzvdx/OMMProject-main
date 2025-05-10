@@ -1,8 +1,19 @@
+# SWE Team 6:
+# Joseph, Tyler, Antonio, Ross, Kashan, Gavin
+# File: addQuestion.py
+# Purpose:  
+#   1.) Handles adding questions to the database in a Flask web application. 
+#   2.) Processes form submissions from a webpage, extracts question details and associated tags
+#   3.) Validates user inputs, and interacts with the database to store questions
+#   4.) Manages error handling for tag mismatches and input length constraints
+#   5.) Uploads images related to the question and redirects users to a succes page upon successful submission
+# Last edited: 02/06/2025 
+
 from flask import flash, redirect, render_template, request, session, url_for
-from database_connection import makeConnection
+from connection import makeConnection
 import os
 from werkzeug.utils import secure_filename
-from DatabaseFunctions import get_question, create_question
+from database import get_question, create_question
 
 
 def addQuestionToDB(UPLOAD_FOLDER):

@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OMM Question Bank</title>
-    <!--<link rel="stylesheet" type="text/css" href="style.css"> -->
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
-    <!-- Add Bootstrap CSS via CDN -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OMM Question Bank</title>
+<!--<link rel="stylesheet" type="text/css" href="style.css"> -->
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
+<!-- Add Bootstrap CSS via CDN -->
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body class="index">
-    <div class="container-text-center">
-        <h1>OMM Question Bank</h1>
-        <div class="row mt-4"></div>
+    <div class="text-overlay">
+        <p class="display-3" style="font-family: Lexend; color: white; font-size: 64px;">
+            OMM Question Bank
+        </p>
     </div>
+    
+    <div class="line"></div>
+    
     <!-- Add Bootstrap JS and jQuery via CDN (optional) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
@@ -41,30 +45,84 @@
             return true;
         }
     </script>
-  </head>
+</head>
 
-  <body class="loginPage">
+<body class="loginPage">
 
     <!-- <form action="dashboard.html" onsubmit="return validateForm()" method="POST"> -->
     <form onsubmit="return validateForm()" method="POST">
-
-          {% with messages = get_flashed_messages(with_categories=true) %}
-          {% if messages %}
-          <div class="alert alert-{{ messages[0][1] }}">
-            {{ messages[0][0] }}
-          </div>
-          {% endif %}
-          {% endwith %}
-        <label for="email">Email address</label>
-        <input type="text" id="email" class="form-control" placeholder="Email address" name="email" required autofocus><br><br>
-
-        <label for="password">Password</label>
-        <input type="password" id="password" class="form-control" placeholder="Password" name="password" required><br><br>
         
-          <a href="/signup"><p class="text-primary bg-dark">Create an Account Here</p></a>
+        <div class="container" style="margin: 0 auto; text-align: center;">
+            <div class="text-overlay">
+                <p class="display-3" style="font-family: Lexend; color: white; font-size: 32px;">
+                    Log in to get started!
+                </p>
+            </div>
+            <div class="text-overlay">
+                <p class="display-3" style="font-family: Lexend; color: white; font-size: 24px;">
+                    Enter Email Address
+                </p>
+            </div>
+            <input type="text" id="email" class="form-control" placeholder="Email address" name="email" style="width: 300px; margin-bottom: 30px;" required autofocus>
 
-        <input class="button login-button" type="submit" value="Login">
+            <div class="text-overlay">
+                <p class="display-3" style="font-family: Lexend; color: white;font-size: 24px;">
+                    Enter Password
+                </p>
+            </div>
+            
+            <input type="password" id="password" class="form-control" placeholder="Password" name="password" style="width: 300px;" required>
+            
+            <div id="message-container" style="height: 20px;">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="alert alert-{{ messages[0][1] }}" style="font-family: Lexend; margin-bottom: 8px; padding: 10px; color: #ff0000; font-size: 20px; font-weight: bold;">
+                            {{ messages[0][0] }}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            </div>
+            
+            <div class="row justify-content-center" style="gap: 12px">
+                <button type="submit" class="btn btn-primary" style="width: 160px; height: 60px; background-color: #28a745; border: none;">Login</button>
+                <a href="/signup"><button type="button" class="btn btn-primary" style="text-align: center; width: 160px; height: 60px">Create an Account!</button>
+            </div>
+        </div>
 
     </form>
 </body>
+
+<style>
+
+    .text-overlay {
+        position: relative;
+        text-align: center;
+        margin-bottom: 8px;
+    }
+
+    .text-overlay p {
+        color: black;
+        position: relative;
+        font-size: 2rem;
+        white-space: normal;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        margin-bottom: 10px;
+    }
+
+    .text-overlay .lead {
+        color: black;
+        position: relative;
+        font-size: 1.2rem;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+        margin-top: 10px;
+    }
+    
+    .line {
+        width: 40%;
+        margin: 0 auto;
+        border-top: 3px solid White;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    }
+
+</style>
 </html>

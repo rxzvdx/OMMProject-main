@@ -185,7 +185,7 @@ function moveToPreviousQuestion() {
 }
 
 // Function to handle highlighting selected answer
-function highlightSelectedText() {
+/*function highlightSelectedText() {
     if (window.getSelection) {
         const selection = window.getSelection();
         if (selection.toString().length > 0) {
@@ -199,13 +199,13 @@ function highlightSelectedText() {
 }
 
 // Function to handle striking through selected answer
-function strikethroughSelectedAnswer() {
+ function strikethroughSelectedAnswer() {
     let selectedAnswer = document.querySelector('input[name="selected_answer"]:checked + label');
     if (selectedAnswer) {
         selectedAnswer.classList.toggle('strikethrough');
         selectedAnswer.previousElementSibling.disabled = true; // Disable the selected answer
     }
-}
+}*/
 
 function moveToNextQuestion() {
     clearFeedback();

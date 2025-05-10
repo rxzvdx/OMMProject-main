@@ -1,3 +1,15 @@
+# SWE Team 6:
+# Joseph, Tyler, Antonio, Ross, Kashan, Gavin
+# File: stats.py
+# Purpose:  
+#   1.) Retrieves and calculates statistics for a specific student based on their attempted questions 
+#       for different tags.
+#   2.) Queries the database for the total number of questions, the total attempted questions, and the total correct attempts for each tag.
+#   3.) Calculates the percentage of answered and correct attempts for each tag, the results are then stored in a dictionary with the tag
+#       as the key and the total, answered percentage, and correct percentages as values.
+#   4.) Closes the database connection and returns the result dictionary.
+# Last edited: 02/06/2025 
+
 def getStats(cnx, student_id):
     cursor = cnx.cursor()
 
@@ -23,6 +35,10 @@ def getStats(cnx, student_id):
     result = cursor.fetchall()
 
     attempted_question_tags_count = {}
+
+    print("Result:", result)
+    print("Column:", column)
+    print("Index i:", i)
 
     for i,column in enumerate(columns):
             attempted_question_tags_count.update({column[0] : str(result[0][i])})        

@@ -5,218 +5,213 @@
     <form method="POST" enctype="multipart/form-data">
 
         <div class="row">
-            <h5>You are currently editing Question ID # {{ question.getID() }} </h3>
+            <h1>You are currently editing Question ID #{{ question.getID() }} </h1>
         </div>
 
         <div class="row">
-            <!-- Container 1: Upload Image -->
-            <div class="col-md-6">
-                <div class="form-group">
-                    <label for="uploadImage">Question Image</label>
-                    <input type="file" class="form-control-file" id="uploadImage" name="image">
+            <div class="col-md-9">
+                <h2>Question Details</h2>
+                <div class="col-md-11">
+                    <div class="form-group">
+                        <label for="questionInput" class="h5">Question text:</label>
+                        <textarea class="form-control" id="questionInput" name="questionInput" style="width: 750px; height: 360px; resize: none; font-size: 14px;" rows="7">{{ question.getQuestionText() }}</textarea>
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <div class="row-mx-4 d-flex justify-content-left">
+                            <div class="col-md-10">
+                                <label for="uploadImage" class="h5">Question Image (Optional)</label>
+                                <input type="file" class="form-control-file" id="uploadImage" name="image">
+                            </div>
+                            <button type="button" id="removeImage" style="margin-top: 10px; display: {{ question.getImage() if 'in-line' else 'none' }};">Remove Image</button>
+                        </div>
+                        {% if question.getImage() %}
+                            <script>console.log("Image Exists")</script>
+                            <img class="preview-image" id="imagePreview" src="data:image/jpeg;base64,{{ question.getImage() }}" style="display: block; margin-top: 10px;">
+                        {% else %}
+                            <script>console.log("Image Does Not Exist")</script>
+                            <img class="preview-image" id="imagePreview" src="" style="margin-top: 10px;">    
+                        {% endif %}
+                    </div>
                 </div>
             </div>
-                <div class="col-md-6">
-                    {% if question.getImage() %}
-                    <div>Current Image:</div>
-                    <img src="data:image/jpeg;base64,{{ question.getImage() }}" alt="did not load" style="width: 500px; height: 500px;">
-                    {% endif %}
-                </div>
         </div>
+        
+        <div class="line mt-3 mb-3"></div>
 
         <div class="row">
-            <!-- Container 2: Question Input, Tag, Category, Create Table -->
-            <div class="col-md-8">
-                <div class="form-group">
-                    <label for="questionInput" class="h5">Question:</label>
-                    <textarea class="form-control" id="questionInput" name="questionInput" rows="7">{{ question.getQuestionText() }}</textarea>
+            <div class="col-md-10">
+                <h2>Choose Associated Tags</h2>
+                <div class="row-mx-10 d-flex justify-content-left">
+                    <div class="col col-md-4">
+                        <div class="form-group">
+                            <label for="subjectDropdown" class="h5">Subject</label>
+                            <select class="form-control" id="subjectDropdown" name="subjectDropdown">
+                                <option value=""></option>
+                                <option {% if 'anatomy' in question.getTags() %} selected {% endif %} value="anatomy">Anatomy</option>
+                                <option {% if 'autonomics' in question.getTags() %} selected {% endif %} value="autonomics">Autonomics</option>
+                                <option {% if 'biomechanics' in question.getTags() %} selected {% endif %} value="biomechanics">Bio Mechanics</option>
+                                <option {% if 'cardiopulmonary' in question.getTags() %} selected {% endif %} value="cardiopulmonary">Cardiopulmonary</option>
+                                <option {% if 'heent' in question.getTags() %} selected {% endif %} value="heent">H.E.E.N.T</option>
+                                <option {% if 'gastrointestinal' in question.getTags() %} selected {% endif %} value="gastrointestinal">Gastrointestinal</option>
+                                <option {% if 'pregnancy' in question.getTags() %} selected {% endif %} value="pregnancy">Pregnancy</option>
+                                <option {% if 'pediatrics' in question.getTags() %} selected {% endif %} value="pediatrics">Pediatrics</option>
+                                <option {% if 'lymphatics' in question.getTags() %} selected {% endif %} value="lymphatics">Lymphatics</option>
+                                <option {% if 'orthopedic/gaint' in question.getTags() %} selected {% endif %} value="orthopedic/gaint">Orthopedics/Gait</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="subjectDropdown" class="h5">Body Region</label>
+                            <select class="form-control" id="subjectDropdown" name="subjectDropdown">
+                                <option value=""></option>
+                                <option {% if 'head' in question.getTags() %} selected {% endif %} value="head">Head</option>
+                                <option {% if 'cervical' in question.getTags() %} selected {% endif %} value="cervical">Cervical</option>
+                                <option {% if 'thoracic' in question.getTags() %} selected {% endif %} value="thoracic">Thoracic</option>
+                                <option {% if 'lumbar' in question.getTags() %} selected {% endif %} value="lumbar">Lumbar</option>
+                                <option {% if 'pelvis' in question.getTags() %} selected {% endif %} value="pelvis">Pelvis</option>
+                                <option {% if 'sacrum' in question.getTags() %} selected {% endif %} value="sacrum">Sacrum</option>
+                                <option {% if 'lower extremity' in question.getTags() %} selected {% endif %} value="lower extremity">Lower Extremity</option>
+                                <option {% if 'upper extremity' in question.getTags() %} selected {% endif %} value="upper extremity">Upper Extremity</option>
+                                <option {% if 'ribs' in question.getTags() %} selected {% endif %} value="ribs">Ribs</option>
+                                <option {% if 'abdomen' in question.getTags() %} selected {% endif %} value="abdomen">Abdomen</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="form-group">
+                            <label for="subjectDropdown" class="h5">Treatment Technique</label>
+                            <select class="form-control" id="subjectDropdown" name="subjectDropdown">
+                                <option value=""></option>
+                                <option {% if 'mysofacial release (MFR)/soft tissue (ST)' in question.getTags() %} selected {% endif %} value="mysofacial release (MFR)/soft tissue (ST)">Mysofacial Release(MFR)/Soft Tissue(ST)</option>
+                                <option {% if 'muscle energy (ME)' in question.getTags() %} selected {% endif %} value="muscle energy (ME)">Muscle energy(ME)</option>
+                                <option {% if 'high-velocity low-amplitude (HVLA)' in question.getTags() %} selected {% endif %} value="high-velocity low-amplitude (HVLA)">High-velocity Low-amplitude (HVLA)</option>
+                                <option {% if 'counterstrain (CS)' in question.getTags() %} selected {% endif %} value="counterstrain (CS)">Counterstrain(CS)</option>
+                                <option {% if 'facilitated positional release (FPR)' in question.getTags() %} selected {% endif %} value="facilitated positional release (FPR)">Facilitated Positional Release(FPR)</option>
+                                <option {% if 'balanced ligamentous tension (BLT)' in question.getTags() %} selected {% endif %} value="balanced ligamentous tension (BLT)">Balanced Ligamentous Tension(BLT)</option>
+                                <option {% if 'still technique' in question.getTags() %} selected {% endif %} value="still technique">Still Technique</option>
+                                <option {% if 'cranial techniques' in question.getTags() %} selected {% endif %} value="cranial techniques">Cranial Techniques</option>
+                                <option {% if 'lymphatics techniques' in question.getTags() %} selected {% endif %} value="lymphatics techniques">Lymphatics Techniques</option>
+                                <option {% if 'mechanism of action (MOA)' in question.getTags() %} selected {% endif %} value="mechanism of action (MOA)">Mechanism of Action(MOA)</option>
+                                <option {% if 'indications/contraindications to treatment' in question.getTags() %} selected {% endif %} value="indications/contraindications to treatment">Indications/Contraindications to Treatment</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col col-md-3">
-                <div class="form-group">
-                    <label for="subjectDropdown">Subject</label>
-                    <select class="form-control" id="subjectDropdown" name="subjectDropdown">
-                        <option value=""></option>
-                        <option {% if 'anatomy' in question.getTags() %} selected {% endif %} value="anatomy">Anatomy</option>
-                        <option {% if 'autonomics' in question.getTags() %} selected {% endif %} value="autonomics">Autonomics</option>
-                        <option {% if 'biomechanics' in question.getTags() %} selected {% endif %} value="biomechanics">Bio Mechanics</option>
-                        <option {% if 'cardiopulmonary' in question.getTags() %} selected {% endif %} value="cardiopulmonary">Cardiopulmonary</option>
-                        <option {% if 'heent' in question.getTags() %} selected {% endif %} value="heent">H.E.E.N.T</option>
-                        <option {% if 'gastrointestinal' in question.getTags() %} selected {% endif %} value="gastrointestinal">Gastrointestinal</option>
-                        <option {% if 'pregnancy' in question.getTags() %} selected {% endif %} value="pregnancy">Pregnancy</option>
-                        <option {% if 'pediatrics' in question.getTags() %} selected {% endif %} value="pediatrics">Pediatrics</option>
-                        <option {% if 'lymphatics' in question.getTags() %} selected {% endif %} value="lymphatics">Lymphatics</option>
-                        <option {% if 'orthopedic/gaint' in question.getTags() %} selected {% endif %} value="orthopedic/gaint">Orthopedics/Gait</option>
-                        
-                    </select>
-                </div>
-            </div>
-
-            <div class="col-md-3">
-                <label for="subjectDropdown">Body Region</label>
-                    <select class="form-control" id="subjectDropdown" name="subjectDropdown">
-                        <option value=""></option>
-                        <option {% if 'head' in question.getTags() %} selected {% endif %} value="head">Head</option>
-                        <option {% if 'cervical' in question.getTags() %} selected {% endif %} value="cervical">Cervical</option>
-                        <option {% if 'thoracic' in question.getTags() %} selected {% endif %} value="thoracic">Thoracic</option>
-                        <option {% if 'lumbar' in question.getTags() %} selected {% endif %} value="lumbar">Lumbar</option>
-                        <option {% if 'pelvis' in question.getTags() %} selected {% endif %} value="pelvis">Pelvis</option>
-                        <option {% if 'sacrum' in question.getTags() %} selected {% endif %} value="sacrum">Sacrum</option>
-                        <option {% if 'lower extremity' in question.getTags() %} selected {% endif %} value="lower extremity">Lower Extremity</option>
-                        <option {% if 'upper extremity' in question.getTags() %} selected {% endif %} value="upper extremity">Upper Extremity</option>
-                        <option {% if 'ribs' in question.getTags() %} selected {% endif %} value="ribs">Ribs</option>
-                        <option {% if 'abdomen' in question.getTags() %} selected {% endif %} value="abdomen">Abdomen</option>
-
-                    </select>
-            </div>
-
-            <div class="col-md-3">
-                <label for="subjectDropdown">Treatment Techniques</label>
-                    <select class="form-control" id="subjectDropdown" name="subjectDropdown">
-                        <option value=""></option>
-                        <option {% if 'mysofacial release (MFR)/soft tissue (ST)' in question.getTags() %} selected {% endif %} value="mysofacial release (MFR)/soft tissue (ST)">Mysofacial Release(MFR)/Soft Tissue(ST)</option>
-                        <option {% if 'muscle energy (ME)' in question.getTags() %} selected {% endif %} value="muscle energy (ME)">Muscle energy(ME)</option>
-                        <option {% if 'high-velocity low-amplitude (HVLA)' in question.getTags() %} selected {% endif %} value="high-velocity low-amplitude (HVLA)">High-velocity Low-amplitude (HVLA)</option>
-                        <option {% if 'counterstrain (CS)' in question.getTags() %} selected {% endif %} value="counterstrain (CS)">Counterstrain(CS)</option>
-                        <option {% if 'facilitated positional release (FPR)' in question.getTags() %} selected {% endif %} value="facilitated positional release (FPR)">Facilitated Positional Release(FPR)</option>
-                        <option {% if 'balanced ligamentous tension (BLT)' in question.getTags() %} selected {% endif %} value="balanced ligamentous tension (BLT)">Balanced Ligamentous Tension(BLT)</option>
-                        <option {% if 'still technique' in question.getTags() %} selected {% endif %} value="still technique">Still Technique</option>
-                        <option {% if 'cranial techniques' in question.getTags() %} selected {% endif %} value="cranial techniques">Cranial Techniques</option>
-                        <option {% if 'lymphatics techniques' in question.getTags() %} selected {% endif %} value="lymphatics techniques">Lymphatics Techniques</option>
-                        <option {% if 'mechanism of action (MOA)' in question.getTags() %} selected {% endif %} value="mechanism of action (MOA)">Mechanism of Action(MOA)</option>
-                        <option {% if 'indications/contraindications to treatment' in question.getTags() %} selected {% endif %} value="indications/contraindications to treatment">Indications/Contraindications to Treatment</option>
-
-                    </select>
-            </div>
-        </div>
+        
+        <div class="line mt-3 mb-3"></div>
 
          <!-- There was an idea thrown around to create a table for data to be put in and display to students.  This was scrapped due to time constraints -->
         <!-- <button class="btn btn-info">Create Table</button> -->
 
         <form>
+        
         <div class="row">
-            <!-- Container 3: Answers -->
-            <!-- Answer 1 -->
-            <div class="col-md-4">
-                <label class="h5">Answers:</label>
-                <div class="form-group">
-                    <input type="text" class="form-control" name="answer1" id="answer1" value="{{ question.getAnswers()[0].getAnswerText() }}">
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer1" value="1"
-                        {% if question.getAnswers()[0].getIsCorrect() == '1' %}
-                        checked
-                        {% endif %}
-                         >
-                        <label class="form-check-label" for="correctAnswer1">Correct</label>
-                    </div>
-                </div>
-                <!-- Answer 2 -->
-                <div class="form-group">
-                    <input type="text" class="form-control" name="answer2" id="answer2" value="{{ question.getAnswers()[1].getAnswerText() }}">
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer2" value="2"
-                        {% if question.getAnswers()[1].getIsCorrect() == '1' %}
-                        checked
-                    {% endif %}
-                        >
-                        <label class="form-check-label" for="correctAnswer2">Correct</label>
-                    </div>
-                </div>
-                <!-- Answer 3 -->
-                <div class="form-group">
-                    <input type="text" class="form-control" name="answer3" id="answer3" value="{{ question.getAnswers()[2].getAnswerText() }}">
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer3" value="3"
-                        {% if question.getAnswers()[2].getIsCorrect() == '1' %}
-                        checked
-                    {% endif %}>
-                        <label class="form-check-label" for="correctAnswer3">Correct</label>
-                    </div>
-                </div>
-                <!-- Answer 4 -->
-                {% set answer = question.getAnswers()[3] %}
-                <div class="form-group">
-                    <input type="text" class="form-control" name="answer4" id="answer4" 
-                       {% if answer %}
-                         value="{{ answer.getAnswerText() }}"
-                        {% else %}
-                          value = ""
-                        {% endif %}
-                        >
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer4" value="4"
-                        {% if answer %}
-                            {% if answer.getIsCorrect() == '1' %}
-                                checked
-                            {% endif %}
-                        {% endif %}
-                        >
-                        <label class="form-check-label" for="correctAnswer4">Correct</label>
-                    </div>  
-                </div>
-                <!-- Answer 5 -->
-                {% set answer = question.getAnswers()[4] %}
-                <div class="form-group">
-                    <input type="text" class="form-control" name="answer5" id="answer5" 
-                       {% if answer %}
-                         value="{{ answer.getAnswerText() }}"
-                        {% else %}
-                          value = ""
-                        {% endif %}
-                        >
+            <div class="col-md-10">
+                <label class="h5">Answers</label>
+                <div class="col-md-10">
 
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer5" value="5"
-                        {% if answer %}
-                            {% if answer.getIsCorrect() == '1' %}
-                                checked
-                            {% endif %}
-                        {% endif %}
-                        >
-                        <label class="form-check-label" for="correctAnswer5">Correct</label>
-                    </div>  
-                </div>
-                <!-- Answer 6 -->
-                {% set answer = question.getAnswers()[5] %}
-                <div class="form-group">
-                    <input type="text" class="form-control" name="answer6" id="answer6" 
-                       {% if answer %}
-                         value="{{ answer.getAnswerText() }}"
-                        {% else %}
-                          value = ""
-                        {% endif %}
-                        >
-                    <div class="form-check">
-                        <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer6" value="6"
-                        {% if answer %}
-                            {% if answer.getIsCorrect() == '1' %}
-                                checked
-                            {% endif %}
-                        {% endif %}
-                        >
-                        <label class="form-check-label" for="correctAnswer6">Correct</label>
-                    </div>  
+                    <div class="form-group" id="answer1Container">
+                        <label for="answer1" class="h5">Enter Answer 1</label>
+                        <input type="text" class="form-control" name="answer1" id="answer1" value="{{ question.getAnswers()[0].getAnswerText() }}" required>
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer1" value="1" {% if question.getAnswers()[0].getIsCorrect() == '1' %}checked{% endif %}>
+                            <label class="form-check-label" for="correctAnswer1">Correct</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="answer2Container">
+                        <label for="answer2" class="h5">Enter Answer 2</label>
+                        <input type="text" class="form-control" name="answer2" id="answer2" value="{{ question.getAnswers()[1].getAnswerText() }}" required>
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer2" value="2" {% if question.getAnswers()[1].getIsCorrect() == '1' %}checked{% endif %}>
+                            <label class="form-check-label" for="correctAnswer2">Correct</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="answer3Container" {% if not question.getAnswers()[2] or question.getAnswers()[2].getAnswerText() == "" %}style="display: none;"{% endif %}>
+                        <label for="answer3" class="h5">Enter Answer 3</label>
+                        <input type="text" class="form-control" name="answer3" id="answer3" value="{{ question.getAnswers()[2].getAnswerText() if question.getAnswers()[2] else '' }}">
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer3" value="3" {% if question.getAnswers()[2] and question.getAnswers()[2].getIsCorrect() == '1' %}checked{% endif %}>
+                            <label class="form-check-label" for="correctAnswer3">Correct</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="answer4Container" {% if not question.getAnswers()[3] or question.getAnswers()[3].getAnswerText() == "" %}style="display: none;"{% endif %}>
+                        <label for="answer4" class="h5">Enter Answer 4</label>
+                        <input type="text" class="form-control" name="answer4" id="answer4" value="{{ question.getAnswers()[3].getAnswerText() if question.getAnswers()[3] else '' }}">
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer4" value="4" {% if question.getAnswers()[3] and question.getAnswers()[3].getIsCorrect() == '1' %}checked{% endif %}>
+                            <label class="form-check-label" for="correctAnswer4">Correct</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="answer5Container" {% if not question.getAnswers()[4] or question.getAnswers()[4].getAnswerText() == "" %}style="display: none;"{% endif %}>
+                        <label for="answer5" class="h5">Enter Answer 5</label>
+                        <input type="text" class="form-control" name="answer5" id="answer5" value="{{ question.getAnswers()[4].getAnswerText() if question.getAnswers()[4] else '' }}">
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer5" value="5" {% if question.getAnswers()[4] and question.getAnswers()[4].getIsCorrect() == '1' %}checked{% endif %}>
+                            <label class="form-check-label" for="correctAnswer5">Correct</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="answer6Container" {% if not question.getAnswers()[5] or question.getAnswers()[5].getAnswerText() == "" %}style="display: none;"{% endif %}>
+                        <label for="answer6" class="h5">Enter Answer 6</label>
+                        <input type="text" class="form-control" name="answer6" id="answer6" value="{{ question.getAnswers()[5].getAnswerText() if question.getAnswers()[5] else '' }}">
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="correctAnswer" id="correctAnswer6" value="6" {% if question.getAnswers()[5] and question.getAnswers()[5].getIsCorrect() == '1' %}checked{% endif %}>
+                            <label class="form-check-label" for="correctAnswer6">Correct</label>
+                        </div>
+                    </div>
+
+                    <div class="row-mx-10 d-flex justify-content-left">
+                        <button type="button" class="btn btn-primary" style="text-align: center; width: 220px; height: 50px; margin-right: 12px;" id="addAnswerBtn">Add Another Answer</button>
+                        <button type="button" class="btn btn-danger" disabled style="opacity = 0.5; cursor = not-allowed; text-align: center; width: 220px; height: 50px" id="removeAnswerBtn">Remove Last Answer</button>
+                    </div>
                 </div>
             </div>
-
-            <div class="col-md-8">
-                <!-- Column 2: Explanation and Upload Image -->
-                <div class="form-group">
-                    <label for="explanationInput" class="h5">Explanation:</label>
-                    <textarea class="form-control form-control-lg" id="explanationInput" name="explanationInput" rows="7">{{ question.getExampleText() }}</textarea>
+            
+            <div class="line mt-3 mb-3"></div>
+            
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>Explanation</h2>
+                    <div class="col-md-11">
+                        <div class="form-group">
+                            
+                            <label for="explanationInput" class="h5">Explanation Text (Optional):</label>
+                            <textarea class="form-control form-control-lg" id="explanationInput" name="explanationInput" style="width: 750px; height: 360px; resize: none; font-size: 14px;" rows="7">{{ question.getExampleText() }}</textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-10">
+                        <div class="form-group">
+                            <div class="row-mx-4 d-flex justify-content-left">
+                                <div class="col-md-10">
+                                    <label for="uploadExplanationImage" class="h5">Explanation Image (Optional)</label>
+                                    <input type="file" class="form-control-file" id="uploadExplanationImage" name="explanationImage">
+                                </div>
+                                <button type="button" id="removeExplanationImage" style="margin-top: 10px; display: {{ question.getExplanationImage() if 'in-line' else 'none' }}"">Remove Image</button>
+                            </div>
+                            {% if question.getExplanationImage() %}
+                                <img class="preview-image" id="imageExplanationPreview" src="data:image/jpeg;base64,{{ question.getExplanationImage() }}" style="display: block; margin-top: 10px;">
+                            {% else %}
+                                <img class="preview-image" id="imageExplanationPreview" src="" style="display: none; margin-top: 10px;">    
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="uploadExplanationImage">Explanation Image</label>
-                    <input type="file" class="form-control-file" id="uploadExplanationImage" name="explanationImage">
+                
+                <div class="row-mx-10 d-flex justify-content-left" style="position: fixed; bottom: 20px; right: 30px;">
+                    <button name="button" class="btn btn-success" style="margin-right: 12px;" value="editQuestion">Edit Question</button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">Delete Question</button>
                 </div>
-                    {% if question.getExplanationImage() %}
-                    <img src="data:image/jpeg;base64,{{ question.getExplanationImage() }}" alt="did not load" style="width: 500px; height: 500px;">
-                    {% endif %}
-                <button name="button" class="btn btn-success" value="editQuestion">Edit Question</button>
-                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#exampleModal">Delete Question</button>
 
                 <!-- Are you sure you want to delete Modal -->
                 <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -249,4 +244,143 @@
         </form> <!-- Form for the radio buttons in the answers-->
     </form>
 </div>
+
+<script>
+
+    let currAns = document.querySelectorAll(".form-group[id^='answer']:not([style*='display: none'])").length;
+    const maxAns = 6;
+    const minAns = 2;
+    
+    document.getElementById("addAnswerBtn").disabled = currAns === maxAns;
+    document.getElementById("addAnswerBtn").style.opacity = currAns === maxAns ? "0.5" : "1";
+    document.getElementById("addAnswerBtn").style.cursor = currAns === maxAns ? "not-allowed" : "pointer";
+
+    document.getElementById("removeAnswerBtn").disabled = currAns === minAns;
+    document.getElementById("removeAnswerBtn").style.opacity = currAns === minAns ? "0.5" : "1";
+    document.getElementById("removeAnswerBtn").style.cursor = currAns === minAns ? "not-allowed" : "pointer";
+
+    document.getElementById("addAnswerBtn").addEventListener("click", function() {
+        if (maxAns > currAns) {
+            const newAns = document.getElementById(`answer${currAns + 1}Container`);
+            if (newAns) {
+                newAns.style.display = "block";
+                currAns++;
+            }
+        }
+
+        this.disabled = currAns === maxAns;
+        this.style.opacity = currAns === maxAns ? "0.5" : "1";
+        this.style.cursor = currAns === maxAns ? "not-allowed" : "pointer";
+
+        document.getElementById("removeAnswerBtn").disabled = currAns === minAns;
+        document.getElementById("removeAnswerBtn").style.opacity = currAns === minAns ? "0.5" : "1";
+        document.getElementById("removeAnswerBtn").style.cursor = currAns === minAns ? "not-allowed" : "pointer";
+    });
+
+    document.getElementById("removeAnswerBtn").addEventListener("click", function() {
+        if (currAns > minAns) {
+            const lastAns = document.getElementById(`answer${currAns}Container`);
+            const textInput = document.getElementById(`answer${currAns}`);
+            const radioInput = document.getElementById(`correctAnswer${currAns}`);
+
+            if (textInput) textInput.value = "";
+            if (radioInput) radioInput.checked = false;
+
+            if (lastAns) {
+                lastAns.style.display = "none";
+                currAns--;
+            }
+        }
+
+        this.disabled = currAns === minAns;
+        this.style.opacity = currAns === minAns ? "0.5" : "1";
+        this.style.cursor = currAns === minAns ? "not-allowed" : "pointer";
+
+        document.getElementById("addAnswerBtn").disabled = currAns === maxAns;
+        document.getElementById("addAnswerBtn").style.opacity = currAns === maxAns ? "0.5" : "1";
+        document.getElementById("addAnswerBtn").style.cursor = currAns === maxAns ? "not-allowed" : "pointer";
+    });
+    
+    document.getElementById("uploadImage").addEventListener("change", function(event) {
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imagePreview = document.getElementById("imagePreview");
+                const removeBtn = document.getElementById("removeImage");
+                
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = "block";
+                removeBtn.style.display = "inline-block";
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    document.getElementById("uploadExplanationImage").addEventListener("change", function(event) {
+        const file = event.target.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imagePreview = document.getElementById("imageExplanationPreview");
+                const removeBtn = document.getElementById("removeExplanationImage");
+                
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = "block";
+                removeBtn.style.display = "inline-block";
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    document.getElementById("removeImage").addEventListener("click", function() {
+        const input = document.getElementById("uploadImage");
+        const preview = document.getElementById("imagePreview");
+        const removeBtn = document.getElementById("removeImage");
+        
+        input.value = "";
+        preview.src = "#";
+        preview.style.display = "none";
+        removeBtn.style.display = "none";
+    });
+
+    
+    document.getElementById("removeExplanationImage").addEventListener("click", function() {
+        const input = document.getElementById("uploadExplanationImage");
+        const preview = document.getElementById("imageExplanationPreview");
+        const removeBtn = document.getElementById("removeExplanationImage");
+
+        input.value = "";
+        preview.src = "#";
+        preview.style.display = "none";
+        removeBtn.style.display = "none";
+    });
+    
+</script>
+
+<style>
+
+    .line {
+        width: 100%;
+        margin: 0 auto;
+        border-top: 2px solid black;
+        transform: translateX(-5%);
+    }
+    
+    .preview-image {
+        max-width: 1024px;
+        max-height: 576px;
+        width: auto;
+        height: auto;
+        display: block;
+        margin-top: 10px;
+    }
+    
+    body {
+        background-color: #e0e0e0;
+    }
+
+</style>
 {% endblock %}

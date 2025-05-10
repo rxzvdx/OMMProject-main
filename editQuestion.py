@@ -1,9 +1,19 @@
+# SWE Team 6:
+# Joseph, Tyler, Antonio, Ross, Kashan, Gavin
+# File: editQuestion.py
+# Purpose:  
+#   1.) Allows users to edit questions in the database. It handles updating 
+#   question text, explanations, tags, and associated images.
+#   2.) When editing, it deactivates the old question, creates a new one, and transfers old images if necessary.
+#   3.) It includes error handling for invalid input and ensures images are properly saved. 
+# Last edited: 02/06/2025 
+
 import os
-from DatabaseFunctions import get_question, create_question
+from database import get_question, create_question
 from flask import flash, redirect, render_template, request, session, url_for
-from database_connection import makeConnection
+from connection import makeConnection
 from werkzeug.utils import secure_filename
-from Objects import Question
+from models import Question
 
 def editQuestionByID(id, UPLOAD_FOLDER):
     oldQuestion = get_question.getquestionfromdatabase(id, UPLOAD_FOLDER)
@@ -14,38 +24,71 @@ def editQuestionByID(id, UPLOAD_FOLDER):
             example_text = request.form['explanationInput']
             selected_tags = request.form.getlist('subjectDropdown')
 
-            # Get users id (faculty who created the question)
+            # Get user's ID (faculty who created the question)
             user_id = session.get('users_id')
 
             try:
                 create_question.create_question(question_text, example_text, user_id, selected_tags)
+            except TypeError:
+                msg = "Error has occurred:\n Tag Mismatch (let developer know what tags you were trying to add)"
+                return render_template("404.html", msg=msg, user_state=session.get('user_state'))
+            except OverflowError:
+                msg = "Error has occurred:\n Answers couldn't be uploaded into the database, (let developer know there is an issue with inputting answers)"
+                return render_template("404.html", msg=msg, user_state=session.get('user_state'))
 
-            except TypeError: #Type error for tag mistmatch
-                msg = "Error has occured:\n Tag Mismatch (let developer know what tags you were trying to add)"
-                return render_template("404.html", msg = msg, user_state = session.get('user_state'))
+            deleteQuestion(oldQuestion.getID())  # Deactivates the old question in the database
 
-            except OverflowError: #Overflow for an answer being too long (The database is set up so that an answer can be 150 characters long)
-                msg = "Error has occured:\n Answers couldn't be uploaded into the database, (let developer know there is an issue with inputting answers)"
-                return render_template("404.html", msg = msg, user_state = session.get('user_state'))
-            
-            deleteQuestion(oldQuestion.getID()) #Deactivates the old question in the database
-            
-            # id = edit_question(question, UPLOAD_FOLDER)
-            id = create_question.get_latest_question_ID() # Grab new id after edited
+            id = create_question.get_latest_question_ID()  # Grab new ID after editing
             session['edited_question_id'] = id
 
-            #Transfer old images based on the new ID and the old question object
-            transferImages(UPLOAD_FOLDER, id, oldQuestion)
+            # Image flags for removal
+            removeImageFlag = request.form.get("removeImage") == "true"
+            removeExplanationImageFlag = request.form.get("removeExplanationImage") == "true"
+
+            # Remove old images if requested
+            oldImagePath = f"{UPLOAD_FOLDER}/question_{oldQuestion.getID()}.jpeg"
+            oldExplanationPath = f"{UPLOAD_FOLDER}/question_{oldQuestion.getID()}_explanation.jpeg"
+
+            if removeImageFlag and os.path.exists(oldImagePath):
+                os.remove(oldImagePath)
+                flash("Old image removed.")
+
+            if removeExplanationImageFlag and os.path.exists(oldExplanationPath):
+                os.remove(oldExplanationPath)
+                flash("Old explanation image removed.")
+
+            # Handle new image uploads
+            image = request.files.get("image")
+            explanationImage = request.files.get("explanationImage")
+            newImageUploaded = image and image.filename != "" and allowed_file(image.filename)
+            newExplanationImageUploaded = explanationImage and explanationImage.filename != "" and allowed_file(explanationImage.filename)
+
+            if newImageUploaded:
+                filename = f"question_{id}.jpeg"
+                image.save(os.path.join(UPLOAD_FOLDER, filename))
+                flash("New image saved.")
+
+            if newExplanationImageUploaded:
+                filename = f"question_{id}_explanation.jpeg"
+                explanationImage.save(os.path.join(UPLOAD_FOLDER, filename))
+                flash("New explanation image saved.")
+
+            # **Only transfer old images if no new image was uploaded and the old image was not removed**
+            if not newImageUploaded and not removeImageFlag and oldQuestion.getImage():
+                transferImages(UPLOAD_FOLDER, id, oldQuestion)
+
+            if not newExplanationImageUploaded and not removeExplanationImageFlag and oldQuestion.getExplanationImage():
+                transferImages(UPLOAD_FOLDER, id, oldQuestion)
 
             question = get_question.getquestionfromdatabase(id, UPLOAD_FOLDER)
-            return redirect(url_for('success_page', question= question))
-        
-        if request.form['button'] == "deleteQuestion":
-            deleteQuestion(id) #Deactivates the question in the database
-            deleteImages(id, UPLOAD_FOLDER)
-            return render_template('404.html', msg = "Successfuly deleted question", user_state = session.get('user_state'))
+            return redirect(url_for('success_page', question=question))
 
-    return render_template('editQuestion.html', question = oldQuestion, user_state = session.get('user_state'), msg = "")
+        if request.form['button'] == "deleteQuestion":
+            deleteQuestion(id)  # Deactivates the question in the database
+            deleteImages(id, UPLOAD_FOLDER)
+            return render_template('404.html', msg="Successfully deleted question", user_state=session.get('user_state'))
+
+    return render_template('editQuestion.html', question=oldQuestion, user_state=session.get('user_state'), msg="")
 
 
 # UNUSED edit_question
@@ -177,62 +220,50 @@ def edit_question(oldQuestion, UPLOAD_FOLDER):
 
 # If there are images attached to the old question, move them to the new question
 def transferImages(UPLOAD_FOLDER, newID, oldQuestion: Question):
-    image = request.files["image"]
-    explanationImage = request.files["explanationImage"]
+    image = request.files.get("image")  # Use .get() to avoid KeyError
+    explanationImage = request.files.get("explanationImage")
 
-    #Check to see if there is an image in the POST
-    if image.filename == "": # If an image is not given, use the old image (if one exists)
-        flash('No Image given, attempting to use old image')
-
-        #Checking to see if an image was attached to the older question.
-        if oldQuestion.getImage():
-            oldFileName = f"{UPLOAD_FOLDER}\\question_{str(oldQuestion.getID())}.jpeg"
-            newFileName = f"{UPLOAD_FOLDER}\\question_{newID}.jpeg"
-            
-            os.rename(oldFileName, newFileName)
-
-            flash('Image attached from older question')
-        else:
-            flash('No image from user or old question')
-
-    # If an image is attached to the new question, we will just use this new image
-    else:
+    # Handling main question image
+    if image and image.filename != "" and allowed_file(image.filename):  # Save new image
         flash('Yes, new image found.')
-        image = request.files["image"]
-
-        if image.filename != '' and allowed_file(image.filename):
-            image.filename = 'question_' + str(newID) + '.jpeg'
-            filename = secure_filename(image.filename)
-            image.save(os.path.join(UPLOAD_FOLDER, filename))
-        else:
-            flash('Invalid file. Please only choose a jpeg.')
-
-
-    if explanationImage.filename == "": # If an image is not given, use the old image (if one exists)
-        flash('No Image given, attempting to use old image')
-
-        #Checking to see if an image was attached to the older question.
-        if oldQuestion.getExplanationImage():
-            oldFileName = f"{UPLOAD_FOLDER}\\question_{str(oldQuestion.getID())}_explanation.jpeg"
-            newFileName = f"{UPLOAD_FOLDER}\\question_{newID}_explanation.jpeg"
-            
+        image.filename = f"question_{newID}.jpeg"
+        filename = secure_filename(image.filename)
+        image.save(os.path.join(UPLOAD_FOLDER, filename))
+        flash('New image saved.')
+    
+    elif oldQuestion.getImage():  # Only rename if it exists
+        oldFileName = f"{UPLOAD_FOLDER}\\question_{str(oldQuestion.getID())}.jpeg"
+        newFileName = f"{UPLOAD_FOLDER}\\question_{newID}.jpeg"
+        
+        if os.path.exists(oldFileName):  # Prevent renaming a non-existent file
             os.rename(oldFileName, newFileName)
-
-            flash('Image attached from older question')
+            flash('Image attached from older question.')
         else:
-            flash('No image from user or old question')
+            flash('No image found to transfer.')
 
-    # If an image is attached to the new question, we will just use this new image
     else:
-        flash('Yes, new image found.')
-        image = request.files["explanationImage"]
+        flash('No image from user or old question.')
 
-        if image.filename != '' and allowed_file(image.filename):
-            image.filename = 'question_' + str(newID) + '_explanation.jpeg'
-            filename = secure_filename(image.filename)
-            image.save(os.path.join(UPLOAD_FOLDER, filename))
+    # Handling explanation image
+    if explanationImage and explanationImage.filename != "" and allowed_file(explanationImage.filename):  # Save new explanation image
+        flash('Yes, new explanation image found.')
+        explanationImage.filename = f"question_{newID}_explanation.jpeg"
+        filename = secure_filename(explanationImage.filename)
+        explanationImage.save(os.path.join(UPLOAD_FOLDER, filename))
+        flash('New explanation image saved.')
+    
+    elif oldQuestion.getExplanationImage():  # Only rename if it exists
+        oldFileName = f"{UPLOAD_FOLDER}\\question_{str(oldQuestion.getID())}_explanation.jpeg"
+        newFileName = f"{UPLOAD_FOLDER}\\question_{newID}_explanation.jpeg"
+        
+        if os.path.exists(oldFileName):  # Prevent renaming a non-existent file
+            os.rename(oldFileName, newFileName)
+            flash('Explanation image attached from older question.')
         else:
-            flash('Invalid file. Please only choose a jpeg.')
+            flash('No explanation image found to transfer.')
+
+    else:
+        flash('No explanation image from user or old question.')
 
 
 # Deactivate a question depending on the ID of the question
